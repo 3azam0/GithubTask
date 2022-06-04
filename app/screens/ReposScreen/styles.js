@@ -1,12 +1,11 @@
-import { StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
-import { theme } from '../../core/theme';
 
-
-const styles = StyleSheet.create({
+const styless = (colors) =>
+  StyleSheet.create({
     safeAreaView: {
       flex: 1,
-      backgroundColor:  theme.colors.backGround,
+      backgroundColor: colors.backGround,
       paddingHorizontal: 25,
     },
     headerTitle: {
@@ -17,26 +16,28 @@ const styles = StyleSheet.create({
     },
     downLblWrapper: {
       flexDirection: 'row',
-      backgroundColor: theme.colors.white,
+      backgroundColor: colors.white,
       width: widthPercentageToDP(39.2),
       height: heightPercentageToDP(6.14),
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 9,
     },
-    dropDownWrapper:{
-       flexDirection: 'row', width: widthPercentageToDP(86.7), justifyContent: 'space-between' 
+    dropDownWrapper: {
+      flexDirection: 'row',
+      width: widthPercentageToDP(86.7),
+      justifyContent: 'space-between',
     },
-    dropDown:{ backgroundColor: theme.colors.white, width: widthPercentageToDP(39.2), height: heightPercentageToDP(6.14) },
+    dropDown: { backgroundColor: colors.white, width: widthPercentageToDP(39.2), height: heightPercentageToDP(6.14) },
     lbl: {
-      color:  theme.colors.txtgrey,
+      color: colors.txtgrey,
       fontSize: 14,
     },
     vlue: {
-      color:  theme.colors.black,
+      color: colors.txtBlack,
       fontSize: 14,
-      marginRight:8
+      marginRight: 8,
     },
   });
-  
-  export default styles
+
+export default styless;

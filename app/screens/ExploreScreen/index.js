@@ -1,12 +1,14 @@
-import React, { useState,useEffect ,useRef } from 'react';
-import { SafeAreaView,RefreshControl,  FlatList, ActivityIndicator ,View } from 'react-native';
-import {Text} from 'react-native-paper'
-import api from '../../helpers/axios';
-import {RepoCard,Loader,DropDown} from '@components'
-import {Down} from '@icons'
-import styles from './styles'
+import React, { useState, useEffect, useRef } from 'react';
+import { SafeAreaView, RefreshControl, FlatList, ActivityIndicator, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+import api from '../../services/axios';
+import { RepoCard, Loader, DropDown } from '@components';
+import { Down } from '@icons';
+import styless from './styles';
 
-export default ExploreScreen = ({ navigation }) => {
+const ExploreScreen = ({ navigation }) => {
+  const { colors } = useTheme();
+  const styles = styless(colors);
 
   const [repos, setRepos] = useState([]);
   const [page, setPage] = useState(1);
@@ -20,15 +22,13 @@ export default ExploreScreen = ({ navigation }) => {
     { id: '1', name: '10', value: 10 },
     { id: '2', name: '50', value: 50 },
     { id: '3', name: '100', value: 100 },
-
   ]);
   const flatListRef = useRef();
 
-  const [{data, loading }, getRepos] = api.useAxios(
+  const [{ data, loading }, getRepos] = api.useAxios(
     {
       url: `/search/repositories?q=created:>2019-01-10&sort=stars&order=desc&page=${page}&per_page=${perPage}`,
       method: 'get',
-     
     },
 
     { manual: true },
@@ -37,7 +37,7 @@ export default ExploreScreen = ({ navigation }) => {
   useEffect(() => {
     getRepos()
       .then((res) => {
-       // setPagesCount(res.data.meta.pagination.pages);
+        // setPagesCount(res.data.meta.pagination.pages);
         setRepos(res.data.items);
         if (refresh === true) {
           setSetRefresh(false);
@@ -47,41 +47,47 @@ export default ExploreScreen = ({ navigation }) => {
   }, [perPage]);
   useEffect(() => {
     getRepos()
-    .then((res) => {
-
-      if (refresh === true) {
+      .then((res) => {
+        if (refresh === true) {
+          setSetRefresh(false);
+        }
+        if (page === 1) {
+          setRepos(res.data.items);
+          setIsMoreLoading(false);
+        } else {
+          setRepos([...repos, ...res.data.items]);
+          setIsMoreLoading(false);
+        }
+      })
+      .catch((err) => {
+        setIsMoreLoading(false);
+        setCanFetchMore(false);
         setSetRefresh(false);
-      }
-      if (page === 1) {
-        setRepos(res.data.items);
-        setIsMoreLoading(false);
-      } else  {
-        setRepos([...repos, ...res.data.items]);
-        setIsMoreLoading(false);
-      }
-    })
-    .catch((err) => {
-      setIsMoreLoading(false);
-      setCanFetchMore(false);
-      setSetRefresh(false);
-    });
-    
-  }, [page,refresh]);
+        if (err.response) {
+          //response status is an error code
+          console.log(err.response.status);
+        } else if (err.request) {
+          //response not received though the request was sent
+          console.log(err.request);
+        } else {
+          //an error occurred when setting up the request
+          console.log(err.message);
+        }
+      });
+  }, [page, refresh]);
 
   const renderFooter = () => {
     return isMoreLoading && <ActivityIndicator animating size={'large'} />;
   };
 
-
   const handleOnEndReached = () => {
-    if(isMoreLoading === false){
+    if (isMoreLoading === false) {
+      if (page < pagesCount) {
+        setIsMoreLoading(true);
 
-    if (page < pagesCount) {
-      setIsMoreLoading(true);
-
-      setPage(page + 1);
+        setPage(page + 1);
+      }
     }
-  }
   };
 
   const handleRefresh = () => {
@@ -89,63 +95,67 @@ export default ExploreScreen = ({ navigation }) => {
     setPage(1);
   };
 
-  const flatListItem = ({item}) => {
-    return <RepoCard trending updated={item.updated_at} stars={item.stargazers_count} 
-     title={item.full_name} description={item.description} language={item.language}/>;
+  const flatListItem = ({ item }) => {
+    return (
+      <RepoCard
+        trending
+        updated={item.updated_at}
+        stars={item.stargazers_count}
+        title={item.full_name}
+        description={item.description}
+        language={item.language}
+      />
+    );
   };
 
-  const dropDownLbl = () =>{
-    return(
+  const dropDownLbl = () => {
+    return (
       <View style={styles.downLblWrapper}>
-      <Text style={styles.lbl}>View: </Text><Text style={styles.vlue}>Top {perPage}</Text><Down />
+        <Text style={styles.lbl}>View: </Text>
+        <Text style={styles.vlue}>Top {perPage}</Text>
+        <Down />
       </View>
-    )
-  }
- 
+    );
+  };
 
   return (
     <>
-    <SafeAreaView style={styles.safeAreaView}>
- 
-    <View>
-    <Text  style={styles.headerTitle}>Explore popular</Text>
-    </View>
-    <View>
-    
-    <DropDown
-    label={ dropDownLbl()  }
-      mode={'outlined'}
-      visible={showPerPhage}
-      showDropDown={() => setShowPerPage(true)}
-      onDismiss={() => setShowPerPage(false)}
-      value={perPage}
-      setValue={(per)=>{setPerPage(per) ,setPage(1)}}
-      list={dropdown}
-      style={styles.dropdown}
-  />
-    </View>
-      <FlatList
-      showsVerticalScrollIndicator={false}
-      ref={flatListRef}
-      style={{ flex: 1,marginTop:15 }}
-      data={repos}
-      keyExtractor={(itm) => itm.id.toString()}
-      renderItem={flatListItem}
-      ListFooterComponent={renderFooter}
-      onEndReached={handleOnEndReached}
-      
-      refreshControl={
-        <RefreshControl 
-         refreshing={refresh} 
-         onRefresh={handleRefresh}
-         colors={["#68DDBA"]} 
+      <View style={styles.safeAreaView}>
+        <View>
+          <Text style={styles.headerTitle}>Explore popular</Text>
+        </View>
+        <View>
+          <DropDown
+            label={dropDownLbl()}
+            mode={'outlined'}
+            visible={showPerPhage}
+            showDropDown={() => setShowPerPage(true)}
+            onDismiss={() => setShowPerPage(false)}
+            value={perPage}
+            setValue={(per) => {
+              setPerPage(per), setPage(1);
+            }}
+            list={dropdown}
+            style={styles.dropdown}
+          />
+        </View>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          ref={flatListRef}
+          style={{ flex: 1, marginTop: 15 }}
+          data={repos}
+          keyExtractor={(itm) => itm.id.toString()}
+          renderItem={flatListItem}
+          ListFooterComponent={renderFooter}
+          onEndReached={handleOnEndReached}
+          refreshControl={<RefreshControl refreshing={refresh} onRefresh={handleRefresh} colors={['#68DDBA']} />}
+          onEndReachedThreshold={0.7}
         />
-      }
-      onEndReachedThreshold={0.7}
-    />
-    </SafeAreaView>
+      </View>
 
-    <Loader loading={refresh === false && isMoreLoading === false && loading ? true : false} />
-  </>  
+      <Loader loading={refresh === false && isMoreLoading === false && loading ? true : false} />
+    </>
   );
-}
+};
+
+export default ExploreScreen;

@@ -2,7 +2,6 @@ import Axios from 'axios';
 import _ from 'lodash';
 import { makeUseAxios } from 'axios-hooks';
 import LRU from 'lru-cache';
-import { store } from '../store';
 
 // import { apiUrl } from "../utils/config";
 const apiUrll = 'https://api.github.com';
@@ -43,7 +42,7 @@ const axios = Axios.create({
     Accept: 'application/json',
   },
   // transform request data obj to FormData
-  transformRequest: [(data) => toFormData(data)],
+ // transformRequest: [(data) => toFormData(data)],
 });
 
 axios.interceptors.response.use(
@@ -72,11 +71,14 @@ axios.interceptors.response.use(
   },
 );
 
-const cache = new LRU({ max: 20 });
+const cache = new LRU({ max: 10});
+const defaultOptions = { manual: false, useCache: true, ssr: true, autoCancel: true }
 
 const useAxios = makeUseAxios({
   axios,
   cache,
+  defaultOptions
+   
 });
 
 export default {

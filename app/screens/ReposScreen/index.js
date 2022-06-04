@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { SafeAreaView, FlatList, ActivityIndicator, View,RefreshControl, TouchableOpacity } from 'react-native';
-import { Text,  } from 'react-native-paper';
+import { FlatList, ActivityIndicator, View, TouchableOpacity } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 import moment from 'moment';
-import api from '../../helpers/axios';
-import { RepoCard, Loader, DropDown ,Calendarr } from '@components';
-import {Down} from '@icons'
-import styles from './styles'
-export default ExploreScreen = ({ navigation }) => {
+import api from '../../services/axios';
+import { RepoCard, Loader, DropDown, Calendar } from '@components';
+import { Down } from '@icons';
+import styless from './styles';
+
+const ExploreScreen = () => {
   const [repos, setRepos] = useState([]);
   const [page, setPage] = useState(1);
   const [refresh, setSetRefresh] = useState(false);
@@ -29,22 +30,22 @@ export default ExploreScreen = ({ navigation }) => {
   const [value, setValue] = useState(10);
   const [selected, setSelected] = useState('2019-01-10');
   const [selectedDisplay, setSelectedDisplay] = useState('2019-01-10');
+  const { colors } = useTheme();
+  const styles = styless(colors);
 
   const flatListRef = useRef();
-const lngUrl = `/search/repositories?q=language:${language}&sort=stars&order=desc`
-const dateUrl = `/search/repositories?q=created:>${selected}&sort=stars&order=desc`
 
-  const [{  loading }, getLngRepos] = api.useAxios(
+  const [{ loading }, getLngRepos] = api.useAxios(
     {
-      url:`/search/repositories?q=language:${language}&sort=stars&order=desc`,
+      url: `/search/repositories?q=language:${language}&sort=stars&order=desc`,
       method: 'get',
     },
 
     { manual: true },
   );
-  const [{ loading:isLoading }, getDateRepos] = api.useAxios(
+  const [{ loading: isLoading }, getDateRepos] = api.useAxios(
     {
-      url:`/search/repositories?q=created:>${selected}&sort=stars&order=desc`,
+      url: `/search/repositories?q=created:>${selected}&sort=stars&order=desc`,
       method: 'get',
     },
 
@@ -55,37 +56,19 @@ const dateUrl = `/search/repositories?q=created:>${selected}&sort=stars&order=de
       .then((res) => {
         // setPagesCount(res.data.meta.pagination.pages);
         setRepos(res.data.items);
-        
       })
-      .catch((err) => {});
+      .catch(() => {});
   }, [selected]);
   useEffect(() => {
     getLngRepos()
       .then((res) => {
         // setPagesCount(res.data.meta.pagination.pages);
         setRepos(res.data.items);
-        
       })
-      .catch((err) => {});
-  }, [language ]);
- 
-  const renderFooter = () => {
-    return isMoreLoading && <ActivityIndicator animating size={'large'} />;
-  };
-  const handleOnEndReached = () => {
-if(isMoreLoading === false){
-    if (page < pagesCount) {
-      setIsMoreLoading(true);
+      .catch(() => {});
+  }, [language]);
 
-      setPage(page + 1);
-    }
-  }
-  };
 
-  const handleRefresh = () => {
-    setSetRefresh(true);
-    setPage(1);
-  };
 
   const flatListItem = ({ item }) => {
     return (
@@ -108,14 +91,14 @@ if(isMoreLoading === false){
     );
   };
 
-  const dropDownHandler = (lng)=>{
-    setLanguage(lng)
-  }
+  const dropDownHandler = (lng) => {
+    setLanguage(lng);
+  };
   const onDayPress = useCallback((day) => {
     setSelected(moment(day.dateString).format('YYYY-MM-DD'));
     setSelectedDisplay(moment(day.dateString).format('DD MMMM  YY'));
     setShowCal(false);
- //   setPage(1)
+    //   setPage(1)
   }, []);
 
   const marked = useMemo(() => {
@@ -131,13 +114,11 @@ if(isMoreLoading === false){
 
   return (
     <>
-      <SafeAreaView style={styles.safeAreaView}>
+      <View style={styles.safeAreaView}>
         <View>
           <Text style={styles.headerTitle}>Repositories</Text>
         </View>
-        {showCal && (
-          <Calendarr onDayPress={onDayPress} onDismiss={()=>setShowCal(false)}  marked={marked}/>
-        )}
+        {showCal && <Calendar onDayPress={onDayPress} onDismiss={() => setShowCal(false)} marked={marked} />}
         <View style={styles.dropDownWrapper}>
           <DropDown
             search
@@ -147,7 +128,7 @@ if(isMoreLoading === false){
             showDropDown={() => setShowLanguages(true)}
             onDismiss={() => setShowLanguages(false)}
             value={language}
-            setValue={(lng)=>dropDownHandler(lng)}
+            setValue={(lng) => dropDownHandler(lng)}
             list={languages}
             style={styles.dropdown}
           />
@@ -160,11 +141,11 @@ if(isMoreLoading === false){
           data={repos}
           keyExtractor={(itm) => itm.id.toString()}
           renderItem={flatListItem}
-         
         />
-      </SafeAreaView>
+      </View>
 
       <Loader loading={loading || isLoading} />
     </>
   );
 };
+export default ExploreScreen;

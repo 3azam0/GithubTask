@@ -1,32 +1,27 @@
 module.exports = {
   env: {
-    es6: true,
+    es2021: true,
     node: true,
     jest: true,
   },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
+    'prettier', // Add this line!
   ],
-  
   parserOptions: {
-    project: './tsconfig.json',
-  
-  },
-  plugins: ['react', 'react-hooks'],
-  
-  rules: {
-    indent: ['error', 2, { SwitchCase: 1 }],
-    quotes: ['error', 'single', { avoidEscape: true }],
-    
-    'no-empty-function': 'off',
-    'react/display-name': 'off',
-    'react/prop-types': 'off',
-  },
-  settings: {
-    react: {
-      version: 'detect',
+    ecmaFeatures: {
+      jsx: true,
     },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  plugins: ['react', 'prettier'],
+  rules: {
+    'react/react-in-jsx-scope': 'off',
+    camelcase: 'error',
+    'spaced-comment': 'error',
+    quotes: ['error', 'single'],
+    'prettier/prettier': 'error',
   },
 };

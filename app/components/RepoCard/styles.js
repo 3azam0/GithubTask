@@ -1,14 +1,13 @@
  import {StyleSheet} from 'react-native'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
-import { theme } from '../../core/theme';
 
- const styles = StyleSheet.create({
+ const styless =(colors)=> StyleSheet.create({
 
     cardWrapper:{
       width:widthPercentageToDP(86.6),
       borderRadius:13,
-      backgroundColor: theme.colors.white,
-      borderColor: theme.colors.border,
+      backgroundColor:colors.white,
+      borderColor:colors.border,
       paddingTop:heightPercentageToDP(2.9),
       paddingHorizontal:widthPercentageToDP(4),
       marginBottom:heightPercentageToDP(2.25)
@@ -39,11 +38,11 @@ import { theme } from '../../core/theme';
         trending:{
           fontSize:10,
           fontFamily:'Silka Medium',
-          color: theme.colors.txtgrey,
+          color:colors.txtgrey,
           lineHeight:heightPercentageToDP(2.1)
         },
         likesWrapper:{
-          backgroundColor: theme.colors.border,
+          backgroundColor:colors.border,
           width:widthPercentageToDP(12.6),
           justifyContent:"center",
           alignItems:'center',
@@ -55,7 +54,7 @@ import { theme } from '../../core/theme';
           fontFamily:'Silka Medium'
         },
         likes:{
-          color: theme.colors.blue,
+          color:colors.blue,
           fontSize:12,
           fontFamily:'Silka Medium',
           marginRight:widthPercentageToDP(3.3),
@@ -77,15 +76,15 @@ import { theme } from '../../core/theme';
       fontFamily:'Silka SemiBold',
       lineHeight:heightPercentageToDP(3.6),
       marginLeft:widthPercentageToDP(3.1),
-      color: theme.colors.blue,
+      color:colors.blue,
       width:widthPercentageToDP(70)
       },
       divider:{
         width:widthPercentageToDP(77.6),
         height:.5,
-        backgroundColor: theme.colors.border,
+        backgroundColor:colors.border,
         marginVertical:heightPercentageToDP(2.25)
       }
   });
   
-  export default styles;
+  export default styless;
